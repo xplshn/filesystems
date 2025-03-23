@@ -4,7 +4,7 @@ on:
   - push
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -35,6 +35,28 @@ jobs:
                       printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
+
+      - name: List contents of dist directory
+        run: ls -l "${{ github.workspace }}/dist"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}
+          path: ${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar.zst
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}
+          path: ${{ github.workspace }}/dist
 
       - name: List contents of dist directory
         run: ls -l "${{ github.workspace }}/dist"
