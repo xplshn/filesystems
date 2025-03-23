@@ -19,7 +19,7 @@ jobs:
 
       - name: Set release tag
         id: set_tag
-        run: echo "RDATE=$(date +%d%m%Y)" >> $GITHUB_ENV
+        run: echo "RDATE=$(date +%d-%m-%Y)" >> $GITHUB_ENV
 
       - name: Build rootfs using script from stdin
         run: |
