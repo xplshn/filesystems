@@ -17,13 +17,17 @@ jobs:
         with:
           repository: alpinelinux/alpine-make-rootfs
 
+      - name: Set release tag
+        id: set_tag
+        run: echo "RDATE=$(date +%d%m%Y)" >> $GITHUB_ENV
+
       - name: Build rootfs using script from stdin
         run: |
           sudo ./alpine-make-rootfs \
               --branch ${{ matrix.branch }} \
               --packages 'mimalloc' \
               --script-chroot \
-              AlpineLinux_edge-$(date +%Y%m%d).tar.zst - <<'SHELL'
+              AlpineLinux_edge-$(uname -m).tar.zst - <<'SHELL'
                       printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
@@ -31,8 +35,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
         with:
-          name: "Build ${{ env.RELEASE_TAG }}"
-          tag_name: "${{ env.RELEASE_TAG }}"
+          name: "${{ env.RDATE }}"
+          tag_name: "${{ env.RDATE }}"
           prerelease: false
           draft: false
           generate_release_notes: false
