@@ -28,10 +28,11 @@ jobs:
               --branch ${{ matrix.branch }} \
               --packages 'mimalloc' \
               --script-chroot \
-              "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar.zst" - <<'SHELL'
+              "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar" - <<'SHELL'
                       printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
+          zstd "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar"
 
       - name: Fix permissions
         run: sudo chown -R $USER:$USER "${{ github.workspace }}/dist"
