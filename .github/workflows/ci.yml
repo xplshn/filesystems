@@ -4,7 +4,7 @@ on:
   - push
 
 jobs:
-  test:
+  release:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -12,7 +12,10 @@ jobs:
           - latest-stable
           - edge
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout alpine-make-rootfs repository
+        uses: actions/checkout@v4
+        with:
+          repository: alpinelinux/alpine-make-rootfs
 
       - name: Build rootfs using script from stdin
         run: |
