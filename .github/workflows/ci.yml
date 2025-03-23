@@ -32,6 +32,7 @@ jobs:
                       printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
+          ls "${{ github.workspace }}/dist"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
@@ -43,4 +44,4 @@ jobs:
           generate_release_notes: false
           make_latest: true
           files: |
-            ${{ github.workspace }}/dist/*
+            ${{ github.workspace }}/dist/*.tar*
