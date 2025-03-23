@@ -20,10 +20,6 @@ jobs:
         with:
           repository: alpinelinux/alpine-make-rootfs
 
-      - name: Set release tag
-        id: set_tag
-        run: echo "RDATE=$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
-
       - name: Build rootfs using script from stdin
         run: |
           mkdir -p "${{ github.workspace }}/dist"
@@ -38,29 +34,31 @@ jobs:
 
       - name: List contents of dist directory
         run: ls -l "${{ github.workspace }}/dist"
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}
-          path: ${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar.zst
+          name: rootfs-${{ matrix.branch }}-${{ matrix.arch }}
+          path: ${{ github.workspace }}/dist/*
+          retention-days: 1
 
   release:
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
+      - name: Set release tag
+        id: set_tag
+        run: echo "RDATE=$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
+        
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          name: AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}
-          path: ${{ github.workspace }}/dist
-
-      - name: List contents of dist directory
-        run: ls -l "${{ github.workspace }}/dist"
-
+          path: dist
+          
+      - name: List all downloaded artifacts
+        run: find dist -type f | sort
+          
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
         with:
@@ -71,4 +69,4 @@ jobs:
           generate_release_notes: false
           make_latest: true
           files: |
-            ${{ github.workspace }}/dist/*
+            dist/**/*
