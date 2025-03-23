@@ -29,7 +29,6 @@ jobs:
           mkdir -p "${{ github.workspace }}/dist"
           sudo "${{ github.workspace }}/alpine-make-rootfs" \
               --branch ${{ matrix.branch }} \
-              --arch ${{ matrix.arch }} \
               --packages 'mimalloc' \
               --script-chroot \
               "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar.zst" - <<'SHELL'
