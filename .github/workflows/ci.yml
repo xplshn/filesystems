@@ -24,9 +24,8 @@ jobs:
               --packages 'mimalloc' \
               --script-chroot \
               AlpineLinux_edge-$(date +%Y%m%d).tar.zst - <<'SHELL'
-                      printf "\nLD_PRELOAD=/usr/lib/libmimalloc.so\n" >> /etc/profile
-                      printf "Brought to you by smiley corporation.\n
-                              Check out https://github.com/xplshn/filesystems for more information\n" >> /etc/motd
+                      printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
+                      echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
 
       - name: Create Release
