@@ -4,7 +4,7 @@ on:
   - push
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,6 +20,10 @@ jobs:
         with:
           repository: alpinelinux/alpine-make-rootfs
 
+      - name: Set release tag
+        id: set_tag
+        run: echo "RDATE=$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
+
       - name: Build rootfs using script from stdin
         run: |
           mkdir -p "${{ github.workspace }}/dist"
@@ -32,33 +36,12 @@ jobs:
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
 
+      - name: Fix permissions
+        run: sudo chown -R $USER:$USER "${{ github.workspace }}/dist"
+
       - name: List contents of dist directory
         run: ls -l "${{ github.workspace }}/dist"
-        
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: rootfs-${{ matrix.branch }}-${{ matrix.arch }}
-          path: ${{ github.workspace }}/dist/*
-          retention-days: 1
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    steps:
-      - name: Set release tag
-        id: set_tag
-        run: echo "RDATE=$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
-        
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          
-      - name: List all downloaded artifacts
-        run: find dist -type f | sort
-          
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
         with:
@@ -69,4 +52,4 @@ jobs:
           generate_release_notes: false
           make_latest: true
           files: |
-            dist/**/*
+            ${{ github.workspace }}/dist/*
