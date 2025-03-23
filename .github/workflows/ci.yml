@@ -23,12 +23,11 @@ jobs:
 
       - name: Build rootfs using script from stdin
         run: |
-          mkdir -p "${{ github.workspace }}/dist"
           sudo "${{ github.workspace }}/alpine-make-rootfs" \
               --branch ${{ matrix.branch }} \
               --packages 'mimalloc' \
               --script-chroot \
-              "${{ github.workspace }}/dist/AlpineLinux_edge-$(uname -m).tar.zst" - <<'SHELL'
+              "${{ github.workspace }}/AlpineLinux_edge-$(uname -m).tar.zst" - <<'SHELL'
                       printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
@@ -46,4 +45,4 @@ jobs:
           generate_release_notes: false
           make_latest: true
           files: |
-            ${{ github.workspace }}/dist/*
+            ${{ github.workspace }}/*.tar*
