@@ -2,9 +2,22 @@ name: CI
 on:
   - pull_request
   - push
-
 jobs:
+  # Add a new job to set the release tag
+  set-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.set_tag.outputs.release_tag }}
+    steps:
+      - name: Set release tag
+        id: set_tag
+        run: |
+          RDATE=$(date +%d-%m-%Y_%H-%M-%S)
+          echo "release_tag=$RDATE" >> $GITHUB_OUTPUT
+          
+  # Use the tag from the previous job
   release:
+    needs: set-tag
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,11 +32,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: alpinelinux/alpine-make-rootfs
-
-      - name: Set release tag
-        id: set_tag
-        run: echo "RDATE=$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
-
+      
       - name: Build rootfs using script from stdin
         run: |
           mkdir -p "${{ github.workspace }}/dist"
@@ -36,18 +45,18 @@ jobs:
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
           zstd "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar"
-
+      
       - name: Fix permissions
         run: sudo chown -R $USER:$USER "${{ github.workspace }}/dist"
-
+      
       - name: List contents of dist directory
         run: ls -l "${{ github.workspace }}/dist"
-
+      
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
         with:
-          name: "${{ env.RDATE }}"
-          tag_name: "${{ env.RDATE }}"
+          name: "${{ needs.set-tag.outputs.release_tag }}"
+          tag_name: "${{ needs.set-tag.outputs.release_tag }}"
           prerelease: false
           draft: false
           generate_release_notes: false
