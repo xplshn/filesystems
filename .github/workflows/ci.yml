@@ -11,6 +11,9 @@ jobs:
         branch:
           - latest-stable
           - edge
+        arch:
+          - x86_64
+          - aarch64
     steps:
       - name: Checkout alpine-make-rootfs repository
         uses: actions/checkout@v4
@@ -26,9 +29,10 @@ jobs:
           mkdir -p "${{ github.workspace }}/dist"
           sudo "${{ github.workspace }}/alpine-make-rootfs" \
               --branch ${{ matrix.branch }} \
+              --arch ${{ matrix.arch }} \
               --packages 'mimalloc' \
               --script-chroot \
-              "${{ github.workspace }}/dist/AlpineLinux_edge-$(uname -m).tar.zst" - <<'SHELL'
+              "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar.zst" - <<'SHELL'
                       printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
                       echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
