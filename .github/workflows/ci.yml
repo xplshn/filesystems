@@ -1,0 +1,39 @@
+name: CI
+on:
+  - pull_request
+  - push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch:
+          - latest-stable
+          - edge
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build rootfs using script from stdin
+        run: |
+          sudo ./alpine-make-rootfs \
+              --branch ${{ matrix.branch }} \
+              --packages 'mimalloc' \
+              --script-chroot \
+              AlpineLinux_edge-$(date +%Y%m%d).tar.zst - <<'SHELL'
+                      printf "\nLD_PRELOAD=/usr/lib/libmimalloc.so\n" >> /etc/profile
+                      printf "Brought to you by smiley corporation.\n
+                              Check out https://github.com/xplshn/filesystems for more information\n" >> /etc/motd
+              SHELL
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2.2.1
+        with:
+          name: "Build ${{ env.RELEASE_TAG }}"
+          tag_name: "${{ env.RELEASE_TAG }}"
+          prerelease: false
+          draft: false
+          generate_release_notes: false
+          make_latest: true
+          files: |
+            ${{ github.workspace }}/dist/*
