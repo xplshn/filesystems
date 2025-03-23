@@ -27,7 +27,7 @@ jobs:
                       printf "\nLD_PRELOAD=/usr/lib/libmimalloc.so\n" >> /etc/profile
                       printf "Brought to you by smiley corporation.\n
                               Check out https://github.com/xplshn/filesystems for more information\n" >> /etc/motd
-              SHELL
+          SHELL
 
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
