@@ -46,4 +46,4 @@ jobs:
           generate_release_notes: false
           make_latest: true
           files: |
-            ${{ github.workspace }}/dist/*.tar*
+            ${{ github.workspace }}/dist/*
