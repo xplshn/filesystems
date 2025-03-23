@@ -23,7 +23,9 @@ jobs:
 
       - name: Build rootfs using script from stdin
         run: |
-          sudo ./alpine-make-rootfs \
+          mkdir -p "${{ github.workspace }}/dist"
+          cd "${{ github.workspace }}/dist"
+          sudo "${{ github.workspace }}/alpine-make-rootfs" \
               --branch ${{ matrix.branch }} \
               --packages 'mimalloc' \
               --script-chroot \
