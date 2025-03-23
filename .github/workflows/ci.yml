@@ -33,7 +33,7 @@ jobs:
           SHELL
 
       - name: List contents of dist directory
-        run: ls -l "${{ github.workspace }}/dist"
+        run: ls -l "${{ github.workspace }}"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
