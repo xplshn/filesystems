@@ -1,3 +1,4 @@
+// const defaultRootfsURL = "https://github.com/xplshn/filesystems/releases/latest/download/AlpineLinux_edge-%s.tar.zst"
 name: CI
 on:
   pull_request:
