@@ -41,7 +41,7 @@ jobs:
           mkdir -p "${{ github.workspace }}/dist"
           sudo "${{ github.workspace }}/alpine-make-rootfs" \
               --branch ${{ matrix.branch }} \
-              --packages 'mimalloc linux' \
+              --packages 'mimalloc linux-edge' \
               --script-chroot \
               "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar" - <<'SHELL'
                       printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
