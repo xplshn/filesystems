@@ -31,11 +31,11 @@ jobs:
           if [ "${{ matrix.branch }}" = "edge" ]; then
             echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
           else
-            cat -<<'APKCFG' > /etc/apk/repositories
+            cat > /etc/apk/repositories <<'APKCFG'
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/community
             @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-            APKCFG
+APKCFG
           fi
           printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
           echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
@@ -51,11 +51,11 @@ jobs:
           if [ "${{ matrix.branch }}" = "edge" ]; then
             echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
           else
-            cat -<<'APKCFG' > /etc/apk/repositories
+            cat > /etc/apk/repositories <<'APKCFG'
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/community
             @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-            APKCFG
+APKCFG
           fi
           printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
           echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
