@@ -1,4 +1,3 @@
-# const defaultRootfsURL = "https://github.com/xplshn/filesystems/releases/latest/download/AlpineLinux_edge-%s.tar.zst"
 name: CI
 on:
   pull_request:
@@ -28,18 +27,22 @@ jobs:
               --branch ${{ matrix.branch }} \
               --packages 'mimalloc apk-tools' \
               --script-chroot \
-              "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar" - <<'SHELL'
-                      printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
-                      echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
-                      cat -<<'APKCFG' > /etc/apk
-          https://dl-cdn.alpinelinux.org/alpine/edge/main
-          https://dl-cdn.alpinelinux.org/alpine/edge/community
-          @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-                      APKCFG
+              "${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar" - <<'SHELL'
+          if [ "${{ matrix.branch }}" = "edge" ]; then
+            echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+          else
+            cat -<<'APKCFG' > /etc/apk/repositories
+            https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
+            https://dl-cdn.alpinelinux.org/alpine/latest-stable/community
+            @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
+            APKCFG
+          fi
+          printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
+          echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
-          gzip -k "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar"
-          xz   -k "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar"
-          zstd    "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          gzip -k "\${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          xz   -k "${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          zstd    "${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar"
 
       - name: Build rootfs using script from stdin (9/K)[rootfs + kernel. For emulating Alpine from within 9front]
         run: |
@@ -49,12 +52,21 @@ jobs:
               --packages 'mimalloc apk-tools linux-edge' \
               --script-chroot \
               "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar" - <<'SHELL'
-                      printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
-                      echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
+          if [ "${{ matrix.branch }}" = "edge" ]; then
+            echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+          else
+            cat -<<'APKCFG' > /etc/apk/repositories
+            https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
+            https://dl-cdn.alpinelinux.org/alpine/latest-stable/community
+            https://dl-cdn.alpinelinux.org/alpine/edge/testing
+            APKCFG
+          fi
+          printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
+          echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
           gzip -k "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar"
-          xz   -k "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar"
-          zstd    "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          xz   -k "${{ github.workspace }}/dist/AlpineLinux_k\${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          zstd    "${{ github.workspace }}/dist/AlpineLinux_k\${{ matrix.branch }}-${{ matrix.arch }}.tar"
 
       - name: List contents of dist directory
         run: ls -l "${{ github.workspace }}/dist"
@@ -72,23 +84,23 @@ jobs:
       - name: Set release tag
         id: set_tag
         run: echo "RDATE=$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
-        
+
       - name: Create dist directory
         run: mkdir -p dist
-        
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
-          
+
       - name: List all downloaded artifacts
         run: find dist -type f | sort
-          
+
       - name: Create Release
         uses: softprops/action-gh-release@v2.2.1
         with:
           name: "${{ env.RDATE }}"
-          tag_name: "${{ env.RDATE }}"
+          tag_name: "\${{ env.RDATE }}"
           prerelease: false
           draft: false
           generate_release_notes: false
