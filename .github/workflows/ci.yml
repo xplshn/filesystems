@@ -21,7 +21,6 @@ jobs:
           - x86_64
           - aarch64
     steps:
-      # Your existing build steps remain unchanged
       - name: Checkout alpine-make-rootfs repository
         uses: actions/checkout@v4
         with:
@@ -33,7 +32,7 @@ jobs:
               --branch ${{ matrix.branch }} \
               --packages 'mimalloc apk-tools' \
               --script-chroot \
-              "${{ github.workspace }}/dist/AlpineLinux_${{ matrix.branch }}-${{ matrix.arch }}.tar" - <<'SHELL'
+              "${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar" - <<'SHELL'
           if [ "${{ matrix.branch }}" = "edge" ]; then
             echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
           else
@@ -46,6 +45,9 @@ jobs:
           printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
           echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
+          gzip -k "\${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          xz   -k "${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          zstd    "${{ github.workspace }}/dist/AlpineLinux_\${{ matrix.branch }}-${{ matrix.arch }}.tar"
       - name: Build rootfs using script from stdin (9/K)[rootfs + kernel. For emulating Alpine from within 9front]
         run: |
           mkdir -p "${{ github.workspace }}/dist"
@@ -66,13 +68,16 @@ jobs:
           printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
           echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
           SHELL
+          gzip -k "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          xz   -k "${{ github.workspace }}/dist/AlpineLinux_k\${{ matrix.branch }}-${{ matrix.arch }}.tar"
+          zstd    "${{ github.workspace }}/dist/AlpineLinux_k\${{ matrix.branch }}-${{ matrix.arch }}.tar"
       - name: List contents of dist directory
         run: ls -l "${{ github.workspace }}/dist"
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: rootfs-${{ matrix.branch }}-${{ matrix.arch }}
-          path: ${{ github.workspace }}/dist/*.tar.*
+          path: \${{ github.workspace }}/dist/*.tar.*
           retention-days: 1
   release:
     needs: build
@@ -81,7 +86,7 @@ jobs:
     steps:
       - name: Set release tag
         id: set_tag
-        run: echo "RDATE=$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
+        run: echo "RDATE=\$(date +%d-%m-%Y_%H-%M-%S)" >> $GITHUB_ENV
       - name: Create dist directory
         run: mkdir -p dist
       - name: Download all artifacts
