@@ -2,6 +2,11 @@ name: CI
 on:
   pull_request:
   workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create release'
+        type: boolean
+        default: false
   schedule:
     - cron: '0 0 */24 * *'
 jobs:
@@ -16,6 +21,7 @@ jobs:
           - x86_64
           - aarch64
     steps:
+      # Your existing build steps remain unchanged
       - name: Checkout alpine-make-rootfs repository
         uses: actions/checkout@v4
         with:
@@ -70,6 +76,7 @@ jobs:
           retention-days: 1
   release:
     needs: build
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.create_release == true)
     runs-on: ubuntu-latest
     steps:
       - name: Set release tag
