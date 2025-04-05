@@ -35,7 +35,7 @@ jobs:
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/community
             @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-APKCFG
+      APKCFG
           fi
           printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
           echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
@@ -55,7 +55,7 @@ APKCFG
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
             https://dl-cdn.alpinelinux.org/alpine/latest-stable/community
             @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-APKCFG
+      APKCFG
           fi
           printf '\nLD_PRELOAD="/usr/lib/libmimalloc.so"\n' >> /etc/profile
           echo "Check out [filesystems](https://github.com/xplshn/filesystems) for more information about this rootfs and its purpose" >> /etc/motd
