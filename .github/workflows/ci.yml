@@ -85,6 +85,8 @@ jobs:
       - name: Get readily available ArchLinux rootfs from pkgforge
         run: |
           curl -Lo "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" https://github.com/pkgforge/devscripts/releases/download/archlinux-base_${{ matrix.arch }}/rootfs.tar
+          mkdir ./arch && tar --no-same-owner -C ./arch xvf "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" && rm "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar"
+          tar -cvf "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" ./arch          
           zstd "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar"
 
       - name: List contents of dist directory
