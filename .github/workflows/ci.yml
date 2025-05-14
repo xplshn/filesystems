@@ -85,6 +85,7 @@ jobs:
       - name: Get readily available ArchLinux rootfs from pkgforge
         if: matrix.branch == 'edge'
         run: |
+          set -x
           curl -Lo "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" https://github.com/pkgforge/devscripts/releases/download/archlinux-base_${{ matrix.arch }}/rootfs.tar
           mkdir ./arch && tar --numeric-owner --no-same-owner --no-same-permissions -C ./arch -xf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" && rm "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
           tar --numeric-owner --no-same-owner --no-same-permissions -cf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" ./arch
