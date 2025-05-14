@@ -87,8 +87,12 @@ jobs:
         run: |
           set -x
           curl -Lo "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" https://github.com/pkgforge/devscripts/releases/download/archlinux-base_${{ matrix.arch }}/rootfs.tar
-          mkdir ./arch && tar --numeric-owner --owner=0 --group=0 --no-same-owner --no-same-permissions -C ./arch -xf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" && rm "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
-          tar --numeric-owner --owner=0 --group=0 --no-same-owner --no-same-permissions -cf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" ./arch
+          mkdir ./arch
+          # Extract with correct permissions
+          tar --numeric-owner --owner=0 --group=0 -C ./arch -xf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
+          rm "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
+          # Repack with correct permissions
+          tar --numeric-owner --owner=0 --group=0 -cf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" ./arch
           zstd "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
 
       - name: List contents of dist directory
