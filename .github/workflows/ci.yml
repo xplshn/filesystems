@@ -82,10 +82,10 @@ jobs:
           xz   -k "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar"
           zstd    "${{ github.workspace }}/dist/AlpineLinux_k${{ matrix.branch }}-${{ matrix.arch }}.tar"
 
-      - name: Build rootfs out of "https://github.com/pkgforge-dev/runimage-base"
+      - name: Get readily available ArchLinux rootfs from pkgforge
         run: |
-          curl -Lo "${{ github.workspace }}/dist/archlinux-base_${{ matrix.arch }}.tar" https://github.com/pkgforge/devscripts/releases/download/archlinux-base_${{ matrix.arch }}/rootfs.tar
-          zstd "${{ github.workspace }}/dist/archlinux-base_${{ matrix.arch }}.tar"
+          curl -Lo "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" https://github.com/pkgforge/devscripts/releases/download/archlinux-base_${{ matrix.arch }}/rootfs.tar
+          zstd "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar"
 
       - name: List contents of dist directory
         run: ls -l "${{ github.workspace }}/dist"
