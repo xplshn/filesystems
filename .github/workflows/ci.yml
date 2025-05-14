@@ -86,7 +86,7 @@ jobs:
         if: matrix.branch == 'edge'
         run: |
           curl -Lo "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" https://github.com/pkgforge/devscripts/releases/download/archlinux-base_${{ matrix.arch }}/rootfs.tar
-          mkdir ./arch && tar --no-same-owner -C ./arch -xf "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" && rm "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar"
+          mkdir ./arch && tar --no-same-owner --no-same-permissions -C ./arch -xf "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" && rm "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar"
           tar -cf "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar" ./arch          
           zstd "${{ github.workspace }}/dist/ArchLinux-base_${{ matrix.arch }}.tar"
           ls ./arch
