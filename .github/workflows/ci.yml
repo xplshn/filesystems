@@ -89,7 +89,7 @@ jobs:
           curl -Lo "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" https://github.com/pkgforge/devscripts/releases/download/archlinux-base_${{ matrix.arch }}/rootfs.tar
           mkdir ./arch
           # Extract with correct permissions
-          tar --numeric-owner --owner=0 --group=0 -C ./arch -xf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
+          sudo tar --numeric-owner --owner=0 --group=0 -C ./arch -xf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
           rm "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar"
           # Repack with correct permissions
           tar --numeric-owner --owner=0 --group=0 -cf "/home/runner/work/filesystems/filesystems/dist/ArchLinux-base_${{ matrix.arch }}.tar" ./arch
